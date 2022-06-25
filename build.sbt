@@ -18,8 +18,12 @@ lazy val root = (project in file("."))
       "software.amazon.awssdk" % "sns"                 % Versions.awsSdk
     ),
     libraryDependencies ++= Seq(
-      "org.scalatest"     %% "scalatest"       % Versions.scalaTest,
-      "org.scalatestplus" %% "scalacheck-1-16" % Versions.scalaTestPlus
+      "io.circe"          %% "circe-parser"         % Versions.circe,
+      "io.circe"          %% "circe-testing"        % Versions.circe,
+      "com.rallyhealth"   %% "scalacheck-ops_1-15"  % "2.8.2",
+      "org.scalatest"     %% "scalatest"            % Versions.scalaTest,
+      "org.scalatestplus" %% "scalacheck-1-16"      % Versions.scalaTestPlus,
+      "org.typelevel"     %% "discipline-scalatest" % "2.1.5"
     ).map(_ % Test),
     libraryDependencies ++= Seq(
       "ch.qos.logback" % "logback-classic" % Versions.logback

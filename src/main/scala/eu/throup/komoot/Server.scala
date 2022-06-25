@@ -18,16 +18,14 @@ object Server {
     val httpApp: HttpApp[F]      = routes.orNotFound
     val finalHttpApp: HttpApp[F] = Logger.httpApp(true, true)(httpApp)
 
-    for {
-      exitCode <- Stream.resource(
-                    EmberServerBuilder
-                      .default[F]
-                      .withHost(ipv4"0.0.0.0")
-                      .withPort(port"8080")
-                      .withHttpApp(finalHttpApp)
-                      .build >>
-                      Resource.eval(Async[F].never)
-                  )
-    } yield exitCode
+    Stream.resource(
+      EmberServerBuilder
+        .default[F]
+        .withHost(ipv4"0.0.0.0")
+        .withPort(port"8080")
+        .withHttpApp(finalHttpApp)
+        .build >>
+        Resource.eval(Async[F].never)
+    )
   }.drain
 }
