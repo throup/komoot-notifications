@@ -5,6 +5,7 @@ package server
 import cats.*
 import cats.effect.*
 import cats.effect.implicits.*
+import cats.effect.std.Random
 import cats.implicits.*
 import eu.throup.komoot.client.KomootClient
 import eu.throup.komoot.domain.*
@@ -28,15 +29,20 @@ object Routes {
   given [F[_]: Concurrent]: EntityDecoder[F, NewUserNotification] =
     jsonOf[F, NewUserNotification]
 
-  def routes[F[_]: Concurrent](using client: KomootClient[F]): HttpRoutes[F] = {
+  def routes[F[_]: Concurrent: Random](using
+      client: KomootClient[F]
+  ): HttpRoutes[F] = {
     val dsl = new Http4sDsl[F] {}
     import dsl.*
+
+    val userRepository = UserRepository.make[F]
+
     HttpRoutes.of[F] {
       // TODO: replace this into an endpoint which meets AWS SNS specs
       case req @ POST -> Root / "demo" =>
         req
           .as[NewUserNotification]
-          .flatMap(handleNewUserNotification)
+          .flatMap(handleNewUserNotification(userRepository))
           .flatMap(Ok(_))
 
       // TODO: remove this; it is just mocking the komoot endpoint for now
@@ -49,7 +55,9 @@ object Routes {
     }
   }
 
-  def handleNewUserNotification[F[_]: Monad](
+  def handleNewUserNotification[F[_]: Monad: Random](
+      userRepository: UserRepository[F]
+  )(
       notification: NewUserNotification
   )(using client: KomootClient[F]): F[Unit] = {
     val usecase = ProcessNewUserNotification.make(
@@ -59,7 +67,7 @@ object Routes {
         GenerateMessage.make,
         Email.unsafeCast("email@example.com")
       ),
-      UserRepository.make
+      userRepository
     )
 
     usecase(notification)

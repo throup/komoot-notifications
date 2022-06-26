@@ -5,6 +5,7 @@ package server
 import cats.*
 import cats.effect.*
 import cats.effect.implicits.*
+import cats.effect.std.Random
 import cats.implicits.*
 import cats.syntax.all.*
 import com.comcast.ip4s.*
@@ -18,11 +19,11 @@ import org.http4s.HttpApp
 import org.http4s.server.middleware.Logger
 
 object Server {
-  def stream[F[_]: Async]: Stream[F, Nothing] = {
+  def stream[F[_]: Async: Random]: Stream[F, Nothing] = {
     Stream.resource(
       for {
         client                  <- KomootClient.resource(sys.env)
-        routes: HttpRoutes[F]    = Routes.routes[F](using summon, client)
+        routes: HttpRoutes[F]    = Routes.routes[F](using summon, summon, client)
         httpApp: HttpApp[F]      = routes.orNotFound
         finalHttpApp: HttpApp[F] = Logger.httpApp(true, true)(httpApp)
         server                  <- EmberServerBuilder
