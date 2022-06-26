@@ -35,7 +35,7 @@ class WelcomeNotificationSpec
       Email.unsafeCast("{your@mail.com}"),
       UserId(1589278470),
       "Hi Marcus, welcome to komoot. Lise, Anna and Stephen also joined recently.",
-      Seq(627362498, 1093883245, 304390273).map(UserId.apply)
+      Seq(627362498L, 1093883245L, 304390273L).map(UserId.apply)
     )
 
   "WelcomeNotification" - {
