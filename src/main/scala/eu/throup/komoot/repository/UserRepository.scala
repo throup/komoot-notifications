@@ -17,5 +17,8 @@ trait UserRepository[F[_]] {
 }
 
 object UserRepository {
-  def make[F[_]]: UserRepository[F] = ???
+  def make[F[_]: Applicative]: UserRepository[F] = new UserRepository[F] {
+    override def create(user: User): F[Unit]  = Applicative[F].unit
+    override def select(n: Int): F[Set[User]] = Applicative[F].pure(Set())
+  }
 }

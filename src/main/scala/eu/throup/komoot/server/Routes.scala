@@ -6,7 +6,15 @@ import cats.*
 import cats.effect.*
 import cats.effect.implicits.*
 import cats.implicits.*
+import eu.throup.komoot.client.KomootClient
 import eu.throup.komoot.domain.*
+import eu.throup.komoot.repository.UserRepository
+import eu.throup.komoot.usecase.{
+  GenerateMessage,
+  IdentifyNewUser,
+  ProcessNewUserNotification,
+  SendWelcomeNotification
+}
 import io.circe.generic.auto.*
 import io.circe.syntax.*
 import messages.*
@@ -17,10 +25,10 @@ import org.http4s.dsl.Http4sDsl
 import org.http4s.dsl.io.*
 
 object Routes {
-  implicit def tweetDecoder[F[_]: Concurrent]
-      : EntityDecoder[F, NewUserNotification] = jsonOf[F, NewUserNotification]
+  given [F[_]: Concurrent]: EntityDecoder[F, NewUserNotification] =
+    jsonOf[F, NewUserNotification]
 
-  def routes[F[_]: Concurrent]: HttpRoutes[F] = {
+  def routes[F[_]: Concurrent](using client: KomootClient[F]): HttpRoutes[F] = {
     val dsl = new Http4sDsl[F] {}
     import dsl.*
     HttpRoutes.of[F] {
@@ -41,19 +49,20 @@ object Routes {
     }
   }
 
-  def handleNewUserNotification[F[_]: Applicative](
-      a: NewUserNotification
-  ): F[WelcomeNotification] = {
-    for {
-      _       <- Applicative[F].unit
-      receiver = a.id
-      no       = WelcomeNotification(
-                   Email.unsafeCast("email@example.com"),
-                   receiver,
-                   "This is the message. Suck it up!",
-                   Seq()
-                 )
-    } yield no
+  def handleNewUserNotification[F[_]: Monad](
+      notification: NewUserNotification
+  )(using client: KomootClient[F]): F[Unit] = {
+    val usecase = ProcessNewUserNotification.make(
+      IdentifyNewUser.make,
+      SendWelcomeNotification.make(
+        summon,
+        GenerateMessage.make,
+        Email.unsafeCast("email@example.com")
+      ),
+      UserRepository.make
+    )
+
+    usecase(notification)
   }
 
   def mockTheFinalEndpoint[F[_]: Applicative](
