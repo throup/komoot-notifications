@@ -29,3 +29,9 @@ lazy val root = (project in file("."))
       "ch.qos.logback" % "logback-classic" % Versions.logback
     ).map(_ % Runtime)
   )
+  .enablePlugins(UniversalPlugin)
+  .enablePlugins(JavaAppPackaging)
+  .enablePlugins(DockerPlugin)
+  .settings(
+    dockerExposedPorts ++= Seq(8080)
+  )
