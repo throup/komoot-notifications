@@ -17,7 +17,7 @@ trait UserRepository[F[_]] {
 
   // Fetch (up to) n unique Users from the repository.
   // If n is greater than the current capacity, it will return a Set containing the full contents of the repository.
-  def select(n: Int): F[Set[User]]
+  def select(n: Int, exclude: Set[UserId] = Set()): F[Set[User]]
 }
 
 object UserRepository {
@@ -34,12 +34,11 @@ object UserRepository {
       Applicative[F].unit
     }
 
-    override def select(n: Int): F[Set[User]] = {
+    override def select(n: Int, exclude: Set[UserId] = Set()): F[Set[User]] =
       for {
-        shuffled <- Random[F].shuffleList(inMem.keys.toList)
+        shuffled <- Random[F].shuffleList(inMem.keys.toList diff exclude.toList)
         ids       = shuffled.take(n)
         users     = ids.map(inMem(_))
       } yield users.toSet
-    }
   }
 }

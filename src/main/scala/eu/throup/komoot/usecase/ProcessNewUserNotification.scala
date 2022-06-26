@@ -20,7 +20,7 @@ object ProcessNewUserNotification {
     override def apply(nun: NewUserNotification): F[Unit] = {
       for {
         user   <- identifyNewUser(nun)
-        others <- repo.select(3)
+        others <- repo.select(3, Set(user.id))
         _      <- repo.create(user)
         _      <- sendWelcomeNotification(user, others)
       } yield ()
