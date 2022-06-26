@@ -1,13 +1,17 @@
 package eu.throup
 package komoot
+package server
 
-import cats.effect.{Async, Resource}
-import cats.syntax.all._
-import com.comcast.ip4s._
+import cats.*
+import cats.effect.*
+import cats.effect.implicits.*
+import cats.implicits.*
+import cats.syntax.all.*
+import com.comcast.ip4s.*
 import fs2.Stream
 import org.http4s.ember.client.EmberClientBuilder
 import org.http4s.ember.server.EmberServerBuilder
-import org.http4s.implicits._
+import org.http4s.implicits.*
 import org.http4s.HttpRoutes
 import org.http4s.HttpApp
 import org.http4s.server.middleware.Logger

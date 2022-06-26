@@ -33,3 +33,11 @@ given Arbitrary[UserName] = Arbitrary {
     name <- Gen.alphaNumStr
   } yield UserName(name)
 }
+
+given Arbitrary[User] = Arbitrary {
+  for {
+    name      <- Arbitrary.arbitrary[UserName]
+    id        <- Arbitrary.arbitrary[UserId]
+    createdAt <- Arbitrary.arbitrary[LocalDateTime]
+  } yield User(name, id, createdAt)
+}
