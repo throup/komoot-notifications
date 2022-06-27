@@ -9,8 +9,8 @@ trait GenerateMessage[F[_]] {
   def apply(user: User, others: Set[User]): F[String]
 }
 object GenerateMessage      {
-  def make[F[_]: Applicative]: GenerateMessage[F] = new GenerateMessage[F] {
-    def apply(user: User, others: Set[User]): F[String] = {
+  def make[F[_]: Applicative]: GenerateMessage[F] =
+    (user: User, others: Set[User]) => {
       // We always need this initial intro.
       val intro = Some(s"Hi ${user.name.value}, welcome to komoot.")
 
@@ -23,7 +23,6 @@ object GenerateMessage      {
         Seq(intro, additional).collect { case Some(s) => s }.mkString(" ")
       )
     }
-  }
 
   def joinNames(names: Seq[String]): Option[String] = {
     if (names.isEmpty) None

@@ -9,7 +9,7 @@ import io.circe.{Decoder, Encoder, HCursor, Json}
 case class Email private (value: String) extends AnyVal
 
 object Email {
-  // Convenience constructor, intended for test cases with fixed inputs.
+  // Convenience constructor, intended for known fixed inputs.
   private[komoot] def unsafeCast(value: String): Email = Email(value)
 
   // Very basic email validation; confirms there are both local and domain parts, separated by @.

@@ -21,8 +21,8 @@ given Arbitrary[Email] = Arbitrary {
 given Arbitrary[UserId] = Arbitrary {
   for {
     // Challenge spec does not define the format of a user id.
-    // Based on the examples given, assuming positive integers for test generators.
-    id <- Gen.posNum[Int]
+    // Based on the examples given, assuming positive longs for test generators.
+    id <- Gen.posNum[Long]
   } yield UserId(id)
 }
 

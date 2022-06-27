@@ -16,6 +16,7 @@ class WelcomeNotificationSpec
     with should.Matchers
     with ScalaCheckPropertyChecks {
 
+  // Allows us to naively construct JSON strings without encoding random characters.
   given Arbitrary[String] = Arbitrary { Gen.alphaNumStr }
 
   val exampleJsonString: String =

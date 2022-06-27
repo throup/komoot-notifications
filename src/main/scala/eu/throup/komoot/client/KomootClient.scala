@@ -2,6 +2,8 @@ package eu.throup
 package komoot
 package client
 
+import cats.*
+import cats.implicits.*
 import cats.effect.{Async, Resource}
 import messages.*
 import org.http4s.Uri
@@ -10,6 +12,7 @@ import org.http4s.client.dsl.Http4sClientDsl
 import org.http4s.dsl.Http4sDsl
 import org.http4s.ember.client.EmberClientBuilder
 import cats.effect.Async
+import com.typesafe.scalalogging.Logger
 import io.circe.Encoder
 import org.http4s.Uri
 import org.http4s.circe.CirceEntityCodec.*
@@ -26,9 +29,18 @@ object KomootClient {
   def make[F[_]: Async](config: Map[String, String] = Map.empty)(implicit
       h4sClient: Client[F]
   ): KomootClient[F] = new KomootClient[F] {
+    private val log = Logger(getClass)
+    private val uri = postWelcomeNotificationUri(config)
+
     override def postWelcomeNotification(
         notification: WelcomeNotification
-    ): F[Unit] = postJson(notification, postWelcomeNotificationUri(config))
+    ): F[Unit] = for {
+      _ <- Applicative[F].pure(log.info(s"Sending $notification to $uri"))
+      _ <- postJson(notification, uri)
+      _ <- Applicative[F].pure(
+             log.info(s"Notification ${notification.receiver} sent")
+           )
+    } yield ()
 
     private def postJson[J: Encoder](json: J, uri: Uri): F[Unit] = {
       // Http4sDsl provides a DSL instance in IO, but
@@ -38,7 +50,12 @@ object KomootClient {
       import clientDsl.*
       import dsl.*
 
-      h4sClient.expect(POST(json, uri))
+      ApplicativeThrow[F].ifF(
+        h4sClient.successful(POST(json, uri))
+      )(
+        Applicative[F].unit,
+        ApplicativeThrow[F].raiseError(new Exception)
+      )
     }
   }
 
@@ -53,5 +70,9 @@ object KomootClient {
     config
       .get("URL_POST_WELCOME_NOTIFICATION")
       .flatMap(Uri.fromString(_).toOption)
-      .getOrElse(Uri.unsafeFromString("http://localhost:8080/mock/push"))
+      .getOrElse(
+        Uri.unsafeFromString(
+          "http://localhost:8080/mock/push"
+        )
+      )
 }

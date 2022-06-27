@@ -16,14 +16,12 @@ object ProcessNewUserNotification {
       identifyNewUser: IdentifyNewUser[F],
       sendWelcomeNotification: SendWelcomeNotification[F],
       repo: UserRepository[F]
-  ): ProcessNewUserNotification[F] = new ProcessNewUserNotification[F] {
-    override def apply(nun: NewUserNotification): F[Unit] = {
-      for {
-        user   <- identifyNewUser(nun)
-        others <- repo.select(3, Set(user.id))
-        _      <- repo.create(user)
-        _      <- sendWelcomeNotification(user, others)
-      } yield ()
-    }
+  ): ProcessNewUserNotification[F] = (nun: NewUserNotification) => {
+    for {
+      user   <- identifyNewUser(nun)
+      others <- repo.select(3, Set(user.id))
+      _      <- repo.create(user)
+      _      <- sendWelcomeNotification(user, others)
+    } yield ()
   }
 }

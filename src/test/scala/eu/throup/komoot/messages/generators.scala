@@ -15,6 +15,32 @@ given Arbitrary[NewUserNotification] = Arbitrary {
   } yield NewUserNotification(name, id, createdAt)
 }
 
+given Arbitrary[SnsMessage] = Arbitrary {
+  for {
+    theType          <- Arbitrary.arbitrary[String]
+    messageId        <- Arbitrary.arbitrary[String]
+    topicArn         <- Arbitrary.arbitrary[String]
+    subject          <- Arbitrary.arbitrary[String]
+    message          <- Arbitrary.arbitrary[String]
+    timestamp        <- Arbitrary.arbitrary[String]
+    signatureVersion <- Arbitrary.arbitrary[String]
+    signature        <- Arbitrary.arbitrary[String]
+    signingCertUrl   <- Arbitrary.arbitrary[String]
+    unsubscribeUrl   <- Arbitrary.arbitrary[String]
+  } yield SnsMessage(
+    theType = theType,
+    messageId = messageId,
+    topicArn = topicArn,
+    subject = Some(subject),
+    message = message,
+    timestamp = timestamp,
+    signatureVersion = signatureVersion,
+    signature = signature,
+    signingCertUrl = signingCertUrl,
+    unsubscribeUrl = Some(unsubscribeUrl)
+  )
+}
+
 given Arbitrary[WelcomeNotification] = Arbitrary {
   for {
     sender        <- Arbitrary.arbitrary[Email]

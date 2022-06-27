@@ -10,6 +10,7 @@ import cats.implicits.*
 import cats.syntax.all.*
 import com.comcast.ip4s.*
 import eu.throup.komoot.client.KomootClient
+import eu.throup.komoot.client.KomootClient.make
 import fs2.Stream
 import org.http4s.ember.client.EmberClientBuilder
 import org.http4s.ember.server.EmberServerBuilder
@@ -22,8 +23,10 @@ object Server {
   def stream[F[_]: Async: Random]: Stream[F, Nothing] = {
     Stream.resource(
       for {
-        client                  <- KomootClient.resource(sys.env)
-        routes: HttpRoutes[F]    = Routes.routes[F](using summon, summon, client)
+        client                  <- EmberClientBuilder.default.build
+        komootClient             = make(sys.env)(using summon[Async[F]], client)
+        routes: HttpRoutes[F]    =
+          Routes.routes[F](using summon, summon, client, komootClient)
         httpApp: HttpApp[F]      = routes.orNotFound
         finalHttpApp: HttpApp[F] = Logger.httpApp(true, true)(httpApp)
         server                  <- EmberServerBuilder

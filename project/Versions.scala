@@ -5,7 +5,7 @@ object Versions {
   val circe         = "0.14.2"
   val http4s        = "0.23.12"
   val logback       = "1.2.11"
-  val scalaLogging  = "3.9.4"
+  val scalaLogging  = "3.9.5"
   val scalaTest     = "3.2.12"
   val scalaTestPlus = "3.2.12.0"
 
