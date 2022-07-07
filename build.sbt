@@ -26,7 +26,7 @@ lazy val root = (project in file("."))
       "com.rallyhealth"   %% "scalacheck-ops_1-15"  % "2.8.2",
       "org.scalatest"     %% "scalatest"            % Versions.scalaTest,
       "org.scalatestplus" %% "scalacheck-1-16"      % Versions.scalaTestPlus,
-      "org.typelevel"     %% "discipline-scalatest" % "2.1.5"
+      "org.typelevel"     %% "discipline-scalatest" % "2.2.0"
     ).map(_ % Test),
     libraryDependencies ++= Seq(
       "ch.qos.logback" % "logback-classic" % Versions.logback
