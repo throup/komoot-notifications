@@ -23,7 +23,7 @@ lazy val root = (project in file("."))
     ),
     libraryDependencies ++= Seq(
       "io.circe"          %% "circe-testing"        % Versions.circe,
-      "com.rallyhealth"   %% "scalacheck-ops_1-15"  % "2.8.2",
+      "com.rallyhealth"   %% "scalacheck-ops_1-15"  % "2.11.0",
       "org.scalatest"     %% "scalatest"            % Versions.scalaTest,
       "org.scalatestplus" %% "scalacheck-1-16"      % Versions.scalaTestPlus,
       "org.typelevel"     %% "discipline-scalatest" % "2.1.5"
