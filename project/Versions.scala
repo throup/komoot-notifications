@@ -9,5 +9,5 @@ object Versions {
   val scalaTest     = "3.2.12"
   val scalaTestPlus = "3.2.12.0"
 
-  val scala = "3.1.3"
+  val scala = "3.2.2"
 }
