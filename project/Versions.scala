@@ -6,7 +6,7 @@ object Versions {
   val http4s        = "0.23.13"
   val logback       = "1.2.11"
   val scalaLogging  = "3.9.5"
-  val scalaTest     = "3.2.12"
+  val scalaTest     = "3.2.16"
   val scalaTestPlus = "3.2.12.0"
 
   val scala = "3.1.3"
